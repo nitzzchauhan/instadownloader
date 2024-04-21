@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file,jsonify
 import requests
 import instaloader
 import os
@@ -6,6 +6,7 @@ from flask_cors import CORS
 from datetime import datetime
 app = Flask(__name__)
 CORS(app)
+
 
 def download_instagram_video(url, save_path):
     # Create an instance of instaloader
@@ -25,41 +26,37 @@ def download_instagram_video(url, save_path):
         with open(save_path, 'wb') as f:
             f.write(requests.get(video_url).content)
         
-        return f"Video downloaded successfully and saved at: {save_path}"
+        return f"{save_path}"
     except Exception as e:
         return f"Error occurred: {e}"
 
 
-# @app.route('/download', methods=['POST'])
-# def download():
-#     instagram_url = "https://www.instagram.com/reel/C4mvw06rRWp/?utm_source=ig_web_copy_link"
-#     save_path = "new.mp4"
-#     message = download_instagram_video(instagram_url, save_path)
-#     return message
-# instagram_url = "https://www.instagram.com/reel/C4mvw06rRWp/?utm_source=ig_web_copy_link"
-# save_path = "newsssvsklvmlkss.mp4"
-# instagram_url ='https://www.instagram.com/reel/C32krbRP3Bp/?utm_source=ig_web_copy_link'
-# download_instagram_video(instagram_url, save_path)
+
 @app.route('/', methods=['POST','GET'])
 def index():
-   if request.method == 'POST':
-    current_time = datetime.now().strftime("%H:%M:%S")
-    instagram_url = request.form['instagram_url']
-    save_path = "new.mp4"
-    file_path = download_instagram_video(instagram_url, save_path)
-    print(instagram_url,save_path)
-    if file_path:
-            return send_file(file_path, as_attachment=True)
-    # download_instagram_video(instagram_url, save_path)
-    else:
-            return "Error downloading video."
+    if request.method == 'POST':
+            global file_path
+            current_time = datetime.now().strftime("%H:%M:%S")
+            instagram_url = request.form['instagram_url']
+            save_path = "new.mp4"
+            file_path = download_instagram_video(instagram_url, save_path)
+            print(instagram_url,save_path)
+            if file_path:
+                    return send_file(file_path, as_attachment=True)
+    
+            else:
+                    return "Error downloading video."
    
-    # if not (os.path.exists(save_path)):
-    #     download_instagram_video(instagram_url, save_path)
-    # else:
-    #     return render_template('cleint.html')
-   else:
-    return render_template('client.html')
+   
+    else:
+        return render_template('client.html')
+  
+@app.route('/d')
+def download():
+    file_path="new.mp4"
+    print(file_path)
+    return send_file(file_path, as_attachment=True)
+    
 
 
 if __name__ == '__main__':
