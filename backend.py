@@ -47,9 +47,10 @@ def index():
             else:
                     return "Error downloading video."
    
+
    
     else:
-        return render_template('client.html')
+        return render_template('index.html')
   
 @app.route('/d')
 def download():
